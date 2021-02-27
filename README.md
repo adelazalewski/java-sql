@@ -37,7 +37,9 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
-
+SELECT *
+FROM customers
+WHERE city = 'London'
 ```
 
 * [ ] ***find all customers with postal code 1010. Returns 3 customers***
@@ -48,7 +50,9 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
-
+SELECT *
+FROM customers
+WHERE postal_code = '1010'
 ```
 
 * [ ] ***find the phone number for the supplier with the id 11. Should be (010) 9984510***
@@ -59,7 +63,9 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
-
+SELECT phone
+FROM suppliers
+WHERE supplier_id = '11'
 ```
 
 * [ ] ***list orders descending by the order date. The order with date 1998-05-06 should be at the top***
@@ -70,7 +76,9 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
-
+SELECT *
+FROM orders
+order by order_date DESC
 ```
 
 * [ ] ***find all suppliers who have names longer than 20 characters. Returns 11 records***
@@ -82,7 +90,9 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
-
+SELECT *
+FROM suppliers
+where length(company_name) > 20
 ```
 
 * [ ] ***find all customers that include the word 'MARKET' in the contact title. Should return 19 records***
@@ -95,7 +105,9 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
-
+SELECT *
+FROM customers
+where upper(contact_title) like '%MARKET%'
 ```
 
 * [ ] ***add a customer record for***
@@ -112,6 +124,9 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
+insert into customers
+(customer_id, company_name, contact_name, address, city, postal_code, country)
+values ('SHIRE', 'The Shire', 'Bilbo Baggins', '1 Hobbit-Hole', 'Bag End', '111', 'Middle Earth')
 
 ```
 
@@ -123,7 +138,9 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
-
+update customers
+set postal_code = '11122'
+where contact_name = 'Bilbo Baggins'
 ```
 
 * [ ] ***list orders grouped and ordered by customer company name showing the number of orders per customer company name. _Rattlesnake Canyon Grocery_ should have 18 orders***
@@ -135,7 +152,11 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
-
+select cus.company_name, count(o.customer_id) as HasThisManyOrders
+from orders as o join customers as cus
+on o.customer_id = cus.customer_id
+where cus.company_name = 'Rattlesnake Canyon Grocery'
+group by cus.company_name
 ```
 
 * [ ] ***list customers by contact name and the number of orders per contact name. Sort the list by the number of orders in descending order. _Jose Pavarotti_ should be at the top with 31 orders followed by _Roland Mendal_ with 30 orders. Last should be _Francisco Chang_ with 1 order***
@@ -146,7 +167,11 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
-
+select cus.contact_name, count(o.customer_id) as HasThisManyOrders
+from orders as o join customers as cus
+on o.customer_id = cus.customer_id
+group by cus.contact_name
+order by HasThisManyOrders DESC
 ```
 
 * [ ] ***list orders grouped by customer's city showing the number of orders per city. Returns 69 Records with _Aachen_ showing 6 orders and _Albuquerque_ showing 18 orders***
@@ -157,7 +182,10 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
-
+select cus.city, count(o.ship_city) as OrdersPerCity
+from orders as o join customers as cus
+on o.customer_id = cus.customer_id
+group by cus.city
 ```
 
 ## Data Normalization
@@ -247,7 +275,22 @@ Table Name:persons_pets
   * account `budget` is required.
 
 ```SQL
+CREATE TABLE public.accounts
+(
+    id numeric,
+    name text NOT NULL,
+    budget numeric,
+    PRIMARY KEY (id)
+);
 
+ALTER TABLE public.accounts
+    OWNER to postgres;
+    
+ALTER TABLE public.accounts
+    ALTER COLUMN budget SET NOT NULL;
+
+ALTER TABLE public.accounts
+    ALTER COLUMN id DROP NOT NULL;
 ```
 
 To see the script
