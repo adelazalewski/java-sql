@@ -197,6 +197,7 @@ Table Name:pets
 |       5     |Miss Kitty |   3        |            
 |      6      |      Toby|    4       |            
 |      7      |     Bubble|   5        |            
+
 Table Name:animal_types
 
 |     id       |type_name |            
